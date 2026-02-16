@@ -1,3 +1,4 @@
+require_relative "../ext/db_ext/db_ext"
 require "sqlite3"
 
 class TaskManager
@@ -12,7 +13,7 @@ class TaskManager
     SQL
 
     def self.add_task(title)
-        DB.execute("INSERT INTO tasks (title, done) VALUES (?, ?)", [title, 0])
+        DBExt.add_task(DB_PATH, title)
     end
 
     def self.list_tasks
