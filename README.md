@@ -13,7 +13,7 @@ between Ruby and C using the SQLite C API.
 - Mark tasks as completed
 - Delete tasks
 - Persistent storage using SQLite
-- Automatic database table creation
+- Schema initialization from SQL file
 - Native C extension for database operations
 
 ---
@@ -23,6 +23,7 @@ between Ruby and C using the SQLite C API.
 - Ruby
 - Thor (CLI framework)
 - SQLite
+- SQL
 - C (Ruby native extension)
 - SQLite C API
 
@@ -44,16 +45,19 @@ SQLite C API
 tasks.db
 ```
 
-Ruby handles:
+### Responsibilities
+
+**Ruby**
 - CLI commands
 - output formatting
 - application logic
+- schema initialization
 
-C handles:
-- executing SQL statements
-- interacting with SQLite via the C API
+**C Extension**
+- executes SQL statements
+- interfaces with SQLite via C API
 
-SQLite handles:
+**SQLite**
 - persistent storage
 
 ---
@@ -71,7 +75,7 @@ ruby-cli-tool/
 ├── lib/
 │   └── task_manager.rb
 ├── db/
-│   └── tasks.db
+│   └── schema.sql
 ├── Gemfile
 └── README.md
 ```
@@ -114,7 +118,7 @@ Ensure the CLI is executable:
 chmod +x bin/pm
 ```
 
-Create the database directory if needed:
+Initialize the database file:
 
 ```
 mkdir -p db
@@ -151,23 +155,39 @@ bin/pm delete 1
 
 ---
 
-## Example Output
+## Example Session
 
 ```
+$ bin/pm add "Finish assignment"
+Task added: Finish assignment
+
+$ bin/pm add "Study C extensions"
+Task added: Study C extensions
+
+$ bin/pm list
 1. [ ] Finish assignment
-2. [x] Study Ruby
+2. [ ] Study C extensions
+
+$ bin/pm done 1
+Task 1 marked as done
+
+$ bin/pm list
+1. [x] Finish assignment
+2. [ ] Study C extensions
 ```
 
 ---
 
 ## Database Schema
 
+Defined in `db/schema.sql`:
+
 ```
-tasks(
+CREATE TABLE IF NOT EXISTS tasks(
   id INTEGER PRIMARY KEY,
   title TEXT,
   done INTEGER
-)
+);
 ```
 
 ---
@@ -182,18 +202,19 @@ This project demonstrates:
 - Using the SQLite C API
 - Cross-language software architecture
 - Compiling native extensions with `mkmf`
+- Returning Ruby objects from C code
 
 ---
 
 ## Future Improvements
 
 - Move remaining database operations into C
+- Prepared statement reuse in C
 - Task priorities
 - Due dates
 - Search command
 - RSpec tests
 - Packaging as a Ruby gem
 - Colored terminal output
-- Connection reuse in the C extension
 
 ---
