@@ -12,7 +12,7 @@ class TaskManager
     end
 
     def self.list_tasks
-        rows = DB.execute("SELECT id, title, done FROM tasks")
+        rows = DBExt.list_tasks(DB_PATH)
 
         rows.each do |id, title, done|
             # Use ternary operator -> if done, mark as [x], if not completed, use [ ]
@@ -22,10 +22,10 @@ class TaskManager
     end
 
     def self.mark_done(id)
-        DB.execute("UPDATE tasks SET done = 1 WHERE id = ?", [id + 1])
+        DBExt.mark_done(DB_PATH, id + 1)
     end
 
     def self.delete_task(id)
-        DB.execute("DELETE FROM tasks WHERE id = ?", [id + 1])
+        DBExt.delete_task(DB_PATH, id + 1)
     end
 end
