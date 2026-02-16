@@ -1,11 +1,8 @@
-# database
 db/tasks.db
 
-# C extension build artifacts
 ext/db_ext/Makefile
 ext/db_ext/*.o
 ext/db_ext/*.bundle
 ext/db_ext/mkmf.log
 
-# Rust build artifacts
 ext/rust_ext/target/
