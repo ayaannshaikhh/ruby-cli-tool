@@ -1,0 +1,30 @@
+#!/usr/bin/env ruby
+require "thor"
+require_relative "../lib/task_manager"
+
+class PM < Thor
+    desc "add TITLE", "Add a new task"
+    def add(title)
+        TaskManager.add_task(title)
+        puts "Task added: #{title}"
+    end
+
+    desc "list", "List all tasks"
+    def list
+        TaskManager.list_tasks
+    end
+
+    desc "done INDEX", "Mark a task as completed"
+    def done(index)
+        TaskManager.mark_done(index.to_i - 1)
+        puts "Task #{index} marked as done"
+    end
+
+    desc "delete INDEX", "Delete a task"
+    def delete(index)
+        TaskManager.delete_task(index.to_i - 1)
+        puts "Task #{index} deleted"
+    end
+end
+
+PM.start(ARGV)
