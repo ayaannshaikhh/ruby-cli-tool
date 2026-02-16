@@ -1,4 +1,9 @@
+# Ignore build artifacts
 ext/db_ext/Makefile linguist-generated
 ext/db_ext/*.bundle linguist-generated
 ext/db_ext/*.o linguist-generated
-ext/db_ext/* linguist-generated
+
+ext/rust_ext/target/* linguist-generated
+
+# Ignore database file
+db/tasks.db linguist-generated
