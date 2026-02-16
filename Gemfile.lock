@@ -1,20 +1,14 @@
 GEM
   specs:
-    json (2.18.1)
-    sqlite3 (2.9.0-arm64-darwin)
     thor (1.5.0)
 
 PLATFORMS
   arm64-darwin-25
 
 DEPENDENCIES
-  json
-  sqlite3
   thor
 
 CHECKSUMS
-  json (2.18.1)
-  sqlite3 (2.9.0-arm64-darwin)
   thor (1.5.0)
 
 BUNDLED WITH
