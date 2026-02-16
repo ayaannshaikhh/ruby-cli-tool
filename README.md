@@ -1,9 +1,8 @@
 # Ruby CLI Project Manager
 
-A simple command-line project manager built in Ruby using Thor and SQLite. 
-This tool allows users to create, list, complete, and delete tasks with persistent storage.
-
-This project demonstrates CLI design, database integration, and modular Ruby architecture.
+A command-line task manager built in Ruby using Thor, SQLite, and a custom C extension.
+This project demonstrates CLI design, database persistence, and cross-language integration
+between Ruby and C using the SQLite C API.
 
 ---
 
@@ -15,6 +14,7 @@ This project demonstrates CLI design, database integration, and modular Ruby arc
 - Delete tasks
 - Persistent storage using SQLite
 - Automatic database table creation
+- Native C extension for database operations
 
 ---
 
@@ -22,7 +22,39 @@ This project demonstrates CLI design, database integration, and modular Ruby arc
 
 - Ruby
 - Thor (CLI framework)
-- SQLite3
+- SQLite
+- C (Ruby native extension)
+- SQLite C API
+
+---
+
+## Architecture
+
+This project separates responsibilities across layers:
+
+```
+CLI (Thor)
+   ↓
+TaskManager (Ruby)
+   ↓
+DBExt (C extension)
+   ↓
+SQLite C API
+   ↓
+tasks.db
+```
+
+Ruby handles:
+- CLI commands
+- output formatting
+- application logic
+
+C handles:
+- executing SQL statements
+- interacting with SQLite via the C API
+
+SQLite handles:
+- persistent storage
 
 ---
 
@@ -32,6 +64,10 @@ This project demonstrates CLI design, database integration, and modular Ruby arc
 ruby-cli-tool/
 ├── bin/
 │   └── pm
+├── ext/
+│   └── db_ext/
+│       ├── db_ext.c
+│       └── extconf.rb
 ├── lib/
 │   └── task_manager.rb
 ├── db/
@@ -57,7 +93,28 @@ Install dependencies:
 bundle install
 ```
 
-Create the database directory (if needed):
+Install SQLite (macOS):
+
+```
+brew install sqlite
+```
+
+Build the native extension:
+
+```
+cd ext/db_ext
+ruby extconf.rb
+make
+cd ../..
+```
+
+Ensure the CLI is executable:
+
+```
+chmod +x bin/pm
+```
+
+Create the database directory if needed:
 
 ```
 mkdir -p db
@@ -71,25 +128,25 @@ touch db/tasks.db
 Add a task:
 
 ```
-ruby bin/pm add "Finish assignment"
+bin/pm add "Finish assignment"
 ```
 
 List tasks:
 
 ```
-ruby bin/pm list
+bin/pm list
 ```
 
 Mark a task as done:
 
 ```
-ruby bin/pm done 1
+bin/pm done 1
 ```
 
 Delete a task:
 
 ```
-ruby bin/pm delete 1
+bin/pm delete 1
 ```
 
 ---
@@ -103,12 +160,7 @@ ruby bin/pm delete 1
 
 ---
 
-## How It Works
-
-The CLI commands are handled by Thor in `bin/pm`.
-Task operations are managed in `TaskManager`, which interacts with a SQLite database.
-
-When the application starts, it automatically ensures the `tasks` table exists:
+## Database Schema
 
 ```
 tasks(
@@ -118,17 +170,30 @@ tasks(
 )
 ```
 
-All task operations use parameterized SQL queries.
+---
+
+## Learning Goals
+
+This project demonstrates:
+
+- Building a CLI tool with Thor
+- SQLite database integration
+- Writing a Ruby native extension in C
+- Using the SQLite C API
+- Cross-language software architecture
+- Compiling native extensions with `mkmf`
 
 ---
 
 ## Future Improvements
 
+- Move remaining database operations into C
 - Task priorities
 - Due dates
 - Search command
 - RSpec tests
 - Packaging as a Ruby gem
 - Colored terminal output
+- Connection reuse in the C extension
 
 ---
