@@ -1,8 +1,7 @@
 # Ruby CLI Project Manager
 
-A command-line task manager built in Ruby using Thor, SQLite, and a custom C extension.
-This project demonstrates CLI design, database persistence, and cross-language integration
-between Ruby and C using the SQLite C API.
+A command-line task manager built in Ruby using Thor, SQLite, a custom C extension, and a Rust search module.
+This project demonstrates CLI design, database persistence, and cross-language integration between Ruby, C, and Rust.
 
 ---
 
@@ -12,9 +11,11 @@ between Ruby and C using the SQLite C API.
 - List tasks
 - Mark tasks as completed
 - Delete tasks
+- Search tasks (Rust-powered)
 - Persistent storage using SQLite
 - Schema initialization from SQL file
-- Native C extension for database operations
+- Native C extension for database CRUD operations
+- Rust extension for search functionality
 
 ---
 
@@ -25,7 +26,10 @@ between Ruby and C using the SQLite C API.
 - SQLite
 - SQL
 - C (Ruby native extension)
+- Rust (FFI search module)
 - SQLite C API
+- rusqlite (Rust SQLite library)
+- FFI (Ruby → Rust bridge)
 
 ---
 
@@ -38,12 +42,13 @@ CLI (Thor)
    ↓
 TaskManager (Ruby)
    ↓
-DBExt (C extension)
+C extension (CRUD operations)
+Rust extension (search functionality)
    ↓
-SQLite C API
-   ↓
-tasks.db
+SQLite database
 ```
+
+---
 
 ### Responsibilities
 
@@ -52,10 +57,16 @@ tasks.db
 - output formatting
 - application logic
 - schema initialization
+- FFI bridge to Rust
 
 **C Extension**
-- executes SQL statements
-- interfaces with SQLite via C API
+- executes CRUD SQL statements
+- interfaces with SQLite via the C API
+
+**Rust Extension**
+- performs task search queries
+- connects to SQLite using `rusqlite`
+- returns formatted results to Ruby
 
 **SQLite**
 - persistent storage
@@ -69,11 +80,16 @@ ruby-cli-tool/
 ├── bin/
 │   └── pm
 ├── ext/
-│   └── db_ext/
-│       ├── db_ext.c
-│       └── extconf.rb
+│   ├── db_ext/
+│   │   ├── db_ext.c
+│   │   └── extconf.rb
+│   └── rust_ext/
+│       ├── Cargo.toml
+│       └── src/
+│           └── lib.rs
 ├── lib/
-│   └── task_manager.rb
+│   ├── task_manager.rb
+│   └── rust_search.rb
 ├── db/
 │   └── schema.sql
 ├── Gemfile
@@ -91,7 +107,7 @@ git clone <your-repo-url>
 cd ruby-cli-tool
 ```
 
-Install dependencies:
+Install Ruby dependencies:
 
 ```
 bundle install
@@ -103,7 +119,17 @@ Install SQLite (macOS):
 brew install sqlite
 ```
 
-Build the native extension:
+Install Rust:
+
+```
+curl https://sh.rustup.rs -sSf | sh
+```
+
+---
+
+## Build Native Extensions
+
+Build the C extension:
 
 ```
 cd ext/db_ext
@@ -112,13 +138,17 @@ make
 cd ../..
 ```
 
-Ensure the CLI is executable:
+Build the Rust extension:
 
 ```
-chmod +x bin/pm
+cd ext/rust_ext
+cargo build --release
+cd ../..
 ```
 
-Initialize the database file:
+---
+
+## Setup Database
 
 ```
 mkdir -p db
@@ -153,27 +183,24 @@ Delete a task:
 bin/pm delete 1
 ```
 
+Search tasks (Rust):
+
+```
+bin/pm search "study"
+```
+
 ---
 
 ## Example Session
 
 ```
-$ bin/pm add "Finish assignment"
-Task added: Finish assignment
+$ bin/pm add "Study Rust"
+$ bin/pm add "Study Ruby"
+$ bin/pm add "Buy milk"
 
-$ bin/pm add "Study C extensions"
-Task added: Study C extensions
-
-$ bin/pm list
-1. [ ] Finish assignment
-2. [ ] Study C extensions
-
-$ bin/pm done 1
-Task 1 marked as done
-
-$ bin/pm list
-1. [x] Finish assignment
-2. [ ] Study C extensions
+$ bin/pm search "Stu"
+1. [ ] Study Rust
+2. [ ] Study Ruby
 ```
 
 ---
@@ -199,9 +226,11 @@ This project demonstrates:
 - Building a CLI tool with Thor
 - SQLite database integration
 - Writing a Ruby native extension in C
+- Integrating Rust with Ruby using FFI
 - Using the SQLite C API
+- Querying SQLite from Rust using `rusqlite`
 - Cross-language software architecture
-- Compiling native extensions with `mkmf`
+- Compiling native extensions with `mkmf` and Cargo
 - Returning Ruby objects from C code
 
 ---
@@ -209,12 +238,10 @@ This project demonstrates:
 ## Future Improvements
 
 - Move remaining database operations into C
+- Return structured results from Rust instead of formatted strings
 - Prepared statement reuse in C
 - Task priorities
 - Due dates
-- Search command
 - RSpec tests
 - Packaging as a Ruby gem
 - Colored terminal output
-
----
