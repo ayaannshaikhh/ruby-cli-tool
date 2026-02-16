@@ -2,15 +2,10 @@ require_relative "../ext/db_ext/db_ext"
 require "sqlite3"
 
 class TaskManager
-    DB = SQLite3::Database.new("db/tasks.db")
-
-    DB.execute <<-SQL
-        CREATE TABLE IF NOT EXISTS tasks(
-            id INTEGER PRIMARY KEY,
-            title TEXT,
-            done INTEGER
-        );
-    SQL
+    DB_PATH = "db/tasks.db"
+    DB = SQLite3::Database.new(DB_PATH)
+    schema = File.read("db/schema.sql")
+    DB.execute_batch(schema)
 
     def self.add_task(title)
         DBExt.add_task(DB_PATH, title)
