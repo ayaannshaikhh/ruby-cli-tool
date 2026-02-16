@@ -1,3 +1,4 @@
 ext/db_ext/Makefile linguist-generated
 ext/db_ext/*.bundle linguist-generated
 ext/db_ext/*.o linguist-generated
+ext/db_ext/* linguist-generated
